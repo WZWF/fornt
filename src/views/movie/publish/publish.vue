@@ -8,7 +8,7 @@
         <div class="desc">
           {{ movieData.language }}
           {{ movieData.types.join(" / ") }}
-          {{ movieData.score }}分 {{ movieData.rateCount }}人
+          {{ movieData.score == null ? 0 : movieData.score }}分 {{ movieData.rateCount }}人
         </div>
       </div>
     </div>
@@ -37,6 +37,7 @@
 <script>
 import { getMovieDetail } from "@/api/movie.js";
 import { getToken } from "@/utils/auth.js";
+import { mapState } from "vuex";
 export default {
   name: "publish",
   data() {
@@ -52,6 +53,13 @@ export default {
     id: function () {
       return this.$route.query.id;
     },
+    ...mapState({
+      user: function () {
+        console.log(111);
+        console.log(this.$store.getters);
+        return this.$store.state.user;
+      },
+    }),
   },
   mounted() {
     this.init();
@@ -91,6 +99,14 @@ export default {
       });
     },
   },
+  created() {
+    if (this.user.id === null || this.user.id === undefined || this.user.id === "") {
+      this.$router.push({
+          name: "login",
+          query: { redirect: this.$router.currentRoute.fullPath },
+        });
+    }
+  }
 };
 </script>
 

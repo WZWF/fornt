@@ -5,13 +5,14 @@
       :rules="rules"
       ref="formDataRef"
       class="post-panel"
-      label-width="50px"
+      label-width="60px"
     >
       <div class="post-editor">
         <el-card :body-style="{ padding: '5px' }">
           <template #header>
             <span>正文</span>
           </template>
+          <editorHtml :height="hemlEditorHeight"></editorHtml>
         </el-card>
       </div>
       <div class="post-setting">
@@ -26,6 +27,23 @@
               v-model="formData.title"
             ></el-input>
           </el-form-item>
+          <el-form-item label="封面" prop="cover">
+            <el-input
+              clearable
+              placeholder="提示"
+              v-model="formData.cover"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="摘要" prop="summary">
+            <el-input
+              clearable
+              placeholder="提示"
+              v-model="formData.summary"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="" prop="summary">
+            <el-button type="primary" style="width: 100%">提交</el-button>
+          </el-form-item>
         </el-card>
       </div>
     </el-form>
@@ -39,6 +57,10 @@ export default {
     return {
       formData: {},
       formDataRef: {},
+      rules:{
+        title: [{required:true, message:"请输入内容"}]
+      },
+      hemlEditorHeight : window.innerHeight,
     };
   },
 };

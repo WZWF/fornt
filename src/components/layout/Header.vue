@@ -117,7 +117,7 @@ export default {
     return {
       isLogin: false,
       searchList: [],
-      searchText:"",
+      searchText: "",
       state: "",
       timeout: null,
       user: {
@@ -131,20 +131,24 @@ export default {
   },
 
   watch: {
-    "$route.params":{
+    "$route.params": {
       handler(val) {
         this.searchText = val.text;
       },
       immediate: true,
-    }
+    },
   },
   methods: {
     init() {
       if (window.localStorage.getItem("ID") !== null) {
-        console.log(window.localStorage.getItem("ID"));
         getInfo(window.localStorage.getItem("ID")).then((res) => {
-          this.isLogin = true;
-          this.user = res.obj;
+          if (res.code === 200) {
+            this.isLogin = true;
+            this.user = res.obj;
+          } else {
+            this.isLogin = false;
+            this.user = {};
+          }
         });
       }
     },
@@ -154,11 +158,21 @@ export default {
     },
 
     goSearch() {
-      this.$router.push('/search/' + this.searchText)
+      this.$router.push("/search/" + this.searchText);
     },
-    handleLogout() {
-      this.$store.dispatch("user/logout");
-      this.$router.push({ path: "/login" });
+    async handleLogout() {
+      await this.$store.dispatch("user/logout");
+      //this.$router.push({ path: "/login" });
+      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      // getInfo(window.localStorage.getItem("ID")).then((res) => {
+      //   if (res.code === 200) {
+      //     this.isLogin = true;
+      //     this.user = res.obj;
+      //   } else {
+      //     this.isLogin = false;
+      //     this.user = {};
+      //   }
+      // });
     },
   },
 };

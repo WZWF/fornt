@@ -1,5 +1,5 @@
 import service from "@/utils/request";
-import { getId } from "../utils/auth";
+import { getId, getToken } from "../utils/auth";
 
 export function findById(id) {
     return service({
@@ -77,5 +77,12 @@ export function updatePass(data) {
         url:'/user/resetPass/' + getId(),
         method: 'post',
         data
+    })
+}
+
+export function resetInfo(data) {
+    return service({
+        url:'/user/resetInfo',
+        method: 'get',
     })
 }

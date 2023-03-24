@@ -1,6 +1,9 @@
 <template>
   <div class="main-container">
     <div class="top-list">
+      <div v-if="!typeLoading">
+        <el-skeleton :row="1" animated></el-skeleton>
+      </div>
       <div class="horizontal-list" v-if="types.short.length">
         <div class="list-title">类别：</div>
         <div
@@ -40,8 +43,12 @@
         </div>
       </div>
     </div>
-    <div class="movie-content" v-if="movieData.length">
-      <!-- <div
+    <div>
+      <div v-if="!movieLoading">
+        <el-skeleton :row="3" animated></el-skeleton>
+      </div>
+      <div class="movie-content" v-if="movieData.length">
+        <!-- <div
         v-for="(item, index) in movieData"
         :key="index"
         class="mv-item"
@@ -57,9 +64,13 @@
         </div>
         <div v-else class="no-score">暂无评分</div>
       </div>-->
-      <movieItem v-for="(item,index) in movieData" :itemData="item" :key="index"/>
+        <movieItem
+          v-for="(item, index) in movieData"
+          :itemData="item"
+          :key="index"
+        />
+      </div>
     </div>
-
   </div>
 </template>
   
@@ -72,6 +83,8 @@ export default {
   components: { movieItem },
   data() {
     return {
+      typeLoading: false,
+      movieLoading: false,
       types: {
         orgin: [],
         short: [],
@@ -96,11 +109,13 @@ export default {
   },
   methods: {
     async allTypes() {
+      this.typeLoading = false;
       getTypes().then((res) => {
         this.types.orgin = res.obj;
         this.types.short = this.types.orgin.slice(0, 10);
         this.types.isShowMore = this.types.orgin.length > 10;
       });
+      this.typeLoading = true;
     },
     expand() {
       this.types.short = this.types.orgin;
@@ -125,6 +140,7 @@ export default {
       this.loadData();
     },
     async loadData() {
+      this.movieLoading = false;
       getMovies(this.query).then((res) => {
         if (res.code === 200) {
           this.movieData = res.obj.objs;
@@ -135,6 +151,7 @@ export default {
           this.$message.error(res.message);
         }
       });
+      this.movieLoading = true;
     },
     loadMore() {
       getMovies(this.query).then((res) => {
@@ -183,7 +200,7 @@ export default {
   },
   destroyed() {
     window.onscroll = null;
-  }
+  },
 };
 </script>
   

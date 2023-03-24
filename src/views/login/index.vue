@@ -80,6 +80,7 @@
 </template>
 
 <script>
+import { getToken } from '@/utils/auth'
 export default {
   data() {
     const validateUsername = (rule, value, callback) => {
@@ -111,32 +112,24 @@ export default {
         ],
       },
       passwordType: "password",
-      redirect: null
+      redirect: undefined
     };
   },
   watch: {
-    // $route: {
-    //   handler: function(route) {
-    //     this.redirect = route.query && route.query.redirect
-    //   },
-    //   immediate: true
-    // }
+    $route: {
+      handler: function(route) {
+        this.redirect = route.query && route.query.redirect
+      },
+      immediate: true
+    }
   },
   methods: {
     postLogin() {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
           this.loading = true;
-          this.$store
-            .dispatch("user/login", this.loginForm)
-            .then(() => {
-              this.redirect = this.$route.query.redirect;
-              if (this.redirect) {
-                this.$router.push({ path: this.redirect});
-              } else {
-                this.$router.push({path: '/'})
-              }
-              // window.location.reload("/");
+          this.$store.dispatch("user/login", this.loginForm).then(() => {
+              this.$router.push({ path: this.redirect || '/' })
               this.loading = false;
             })
             .catch((error) => {
@@ -145,7 +138,6 @@ export default {
             });
         } else {
           console.log("error submit!!");
-          this.loading = false;
           return false;
         }
       });

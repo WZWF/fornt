@@ -4,8 +4,8 @@
     <div class="title one-line">{{ itemData.title }}</div>
     <div class="score" v-if="itemData.score">
       <div class="score-content">
-        <rankstar :score="itemData.score * 2" />
-        <span class="score-text">{{ itemData.score.toFixed(1) }}</span>
+        <rankstar :score="itemData.score == null ? 0 : itemData.score * 2" />
+        <span class="score-text">{{ itemData.score == null ? 0 : itemData.score.toFixed(1) }}</span>
       </div>
     </div>
     <div v-else class="no-score">暂无评分</div>

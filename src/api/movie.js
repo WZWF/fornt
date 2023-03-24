@@ -36,3 +36,10 @@ export function listAllPoster() {
         method: "get"
     })
 }
+
+export function getArticleMovieInfo(id) {
+    return request({
+        url: "/movie/articleMovieInfo/" + id,
+        method: 'get'
+    })
+}

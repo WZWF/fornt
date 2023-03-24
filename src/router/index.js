@@ -1,11 +1,13 @@
 import Vue from 'vue'
-import VueRouter from 'vue-router'
 import Layout from "@/components/layout/Layout"
 import Me from "@/views/me/index"
+import Router from 'vue-router'
+import { getToken } from "@/utils/auth"
+import store from '@/store'
 
-Vue.use(VueRouter);
+Vue.use(Router)
 
-const routes = [
+export const routes = [
 
     {
         path: '/login',
@@ -19,7 +21,6 @@ const routes = [
         component: () => import("@/views/register/index")
     },
 
-    //公共布局下的路由
     {
         path: '/',
         component: Layout,
@@ -27,6 +28,18 @@ const routes = [
             {
                 path: '',
                 component: () => import("@/views/home/index")
+            },
+            {
+                path: '/al',
+                component: () => import("@/views/forum/articleList")
+            },
+            {
+                path: '/a/:id',
+                component: () => import("@/views/forum/articleDetail")
+            },
+            {
+                path: '/articleDetail/:id',
+                component: () => import("@/views/forum/articleDetail")
             },
             {
                 path: 'movies',
@@ -51,6 +64,10 @@ const routes = [
                 component: () => import("@/views/forum/addPost")
             },
             {
+                path: '/ap',
+                component: () => import("@/views/forum/aPost")
+            },
+            {
                 path: '/recomend',
                 component: () => import("@/views/recomend/index")
             },
@@ -73,10 +90,59 @@ const routes = [
 
 ];
 
-const router = new VueRouter({
+const createRouter = () => new Router({
     mode: 'history',
+    scrollBehavior: () => ({ y: 0 }),
     base: process.env.BASE_URL,
     routes
 });
+
+const router = createRouter()
+
+export function resetRouter() {
+    const newRouter = createRouter()
+    router.matcher = newRouter.matcher // reset router
+  }
+
+router.beforeEach(async (to, from, next) => {
+    const hasToken = getToken()
+    if (hasToken) {
+        if (to.path === '/login') {
+            // if is logged in, redirect to the home page
+            next({ path: '/' })
+        } else {
+            const hasGetUserInfo = store.getters.name
+            if (hasGetUserInfo) {
+                next()
+            } else {
+                try {
+                    // get user info
+                    await store.dispatch('user/getInfo')
+                    next()
+                } catch (error) {
+                    // remove token and go to login page to re-login
+                    await store.dispatch('user/resetToken')
+                    next()
+                }
+            }
+        }
+    } else {
+        next()
+    }
+})
+
+// const createRouter = () => new Router({
+//     // mode: 'history', // require service support
+//     scrollBehavior: () => ({ y: 0 }),
+//     routes: routes
+//   })
+
+//   const router = createRouter()
+
+//   // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
+//   export function resetRouter() {
+//     const newRouter = createRouter()
+//     router.matcher = newRouter.matcher // reset router
+//   }
 
 export default router

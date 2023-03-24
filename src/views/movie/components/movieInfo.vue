@@ -1,4 +1,8 @@
 <template>
+  <div>
+    <div v-if="!loading">
+      <el-skeleton :row="1" animated></el-skeleton>
+    </div>
   <div class="movie-info" v-if="detailData.id">
     <h1 class="title">{{ detailData.title }}</h1>
     <div class="desc-content">
@@ -46,7 +50,7 @@
         <div class="rank-title">评分</div>
         <div class="rank-score">
           <div class="score">
-            <strong class="num">{{ detailData.score }}</strong>
+            <strong class="num">{{ detailData.score == null ? 0 : detailData.score }}</strong>
           </div>
           <div class="score-star">
             <rankstar :score="detailData.score * 2" class="rankstar" />
@@ -69,6 +73,7 @@
           v-for="(item, index) in starList.list || []"
           :key="index"
           @mouseenter="changeScore(index)"
+          @click="sendScore(index)"
         ></div>
       </div>
       <div>
@@ -85,6 +90,7 @@
       <div class="intro-content">{{ detailData.descri ? detailData.descri : '暂无简介...' }}</div>
     </div>
   </div>
+</div>
 </template>
 
 <script>
@@ -96,19 +102,17 @@ export default {
   computed: {
     ...mapState({
       user: function () {
+        console.log(111);
+        console.log(this.$store.getters);
         return this.$store.state.user;
       },
     }),
-    id: function () {
-      return this.$route.params.id;
-    },
   },
   components: {
     rankstar,
   },
   methods: {
     goPublish() {
-      console.log(this.user);
       if (this.user.token) {
         this.$router.push("/publish?id=" + this.id);
       } else {
@@ -119,6 +123,7 @@ export default {
       }
     },
     async getDetail(id) {
+      this.loading = false;
       await getMovieDetail(id).then((res) => {
         if (res.code === 200) {
           this.detailData = res.obj;
@@ -131,6 +136,7 @@ export default {
           this.$message.error(res.message);
         }
       });
+      this.loading = true;
     },
     //显示所有演员
     expand() {
@@ -149,12 +155,17 @@ export default {
       });
       this.starList.list = list;
     },
+    sendScore(index) {
+      console.log(index);
+    }
   },
   created() {
     this.getDetail(this.id);
   },
   data() {
     return {
+      id : this.$route.params.id,
+      loading:false,
       detailData: {},
       actorsList: {
         orgin: [],

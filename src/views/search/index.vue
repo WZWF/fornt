@@ -12,10 +12,15 @@
         <div class="left-content">
           <router-link :to="'/movie/' + item.id" class="title"
             ><div v-html="item.name"></div>
-            </router-link>
+          </router-link>
           <div class="rank-content">
-            <rankstar :score="item.score * 2" class="rank-star"></rankstar>
-            <div class="score-text">{{ item.score.toFixed(1) }}</div>
+            <rankstar
+              :score="item.score == null ? 0 : item.score * 2"
+              class="rank-star"
+            ></rankstar>
+            <div class="score-text">
+              {{ item.score == null ? 0 : item.score.toFixed(1) }}
+            </div>
           </div>
           <div class="place" v-html="item.descri"></div>
         </div>
@@ -72,7 +77,6 @@ export default {
           this.searchList = res.obj.objs == null ? [] : res.obj.objs;
           this.count = res.obj.count;
         } else {
-
           this.$message.error(res.message);
         }
       });

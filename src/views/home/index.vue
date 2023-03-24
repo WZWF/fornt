@@ -9,7 +9,7 @@
       </el-carousel-item>
     </el-carousel>
 
-    <div class="main">
+    <!-- <div class="main">
       <div class="movie-grid">
         <div class="panel">
           <div class="panel-header">
@@ -53,7 +53,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 

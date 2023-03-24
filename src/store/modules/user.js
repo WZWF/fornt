@@ -1,9 +1,10 @@
-import { login, logout, getInfo } from '@/api/user'
+import { login, logout, resetInfo } from '@/api/user'
 import { getToken, setToken, removeToken, setId, getId, removeId } from '@/utils/auth'
+import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
     return {
-        token: '',
+        token: getToken(),
         name: '',
         avatar: '',
         id: ''
@@ -37,12 +38,12 @@ const actions = {
         return new Promise((resolve, reject) => {
             login({ username: username.trim(), password: password }).then(response => {
                 const { obj } = response
-                localStorage.setItem('token', obj.token)
-                localStorage.setItem('ID', obj.id)
-                commit('SET_TOKEN', obj.token)
-                commit('SET_ID', obj.id)
                 setToken(obj.token)
                 setId(obj.id)
+                window.localStorage.setItem('token', obj.token)
+                window.localStorage.setItem('ID', obj.id)
+                commit('SET_TOKEN', obj.token)
+                commit('SET_ID', obj.id)
                 resolve()
             }).catch(error => {
                 reject(error)
@@ -50,25 +51,30 @@ const actions = {
         })
     },
 
-    setHead({commit}, head) {
+    setHead({ commit }, head) {
         commit('SET_AVATAR', head);
     },
 
     // get user info
     getInfo({ commit, state }) {
         return new Promise((resolve, reject) => {
-            getInfo(state.token).then(response => {
-                const { obj } = response
+            resetInfo(state.token).then(response => {
 
-                if (!obj) {
-                    return reject('Verification failed, please Login again.')
+                if (response.code === 200) {
+                    const { obj } = response
+                    if (!obj) {
+                        return reject('Verification failed, please Login again.')
+                    }
+                    const { id, name, head } = obj
+                    commit('SET_ID', id)
+                    commit('SET_NAME', name)
+                    commit('SET_AVATAR', head)
+                    resolve(obj)
+                } else {
+                    removeToken()
+                    resolve()
                 }
-
-                const { name, head } = obj
-
-                commit('SET_NAME', name)
-                commit('SET_AVATAR', head)
-                resolve(obj)
+                
             }).catch(error => {
                 reject(error)
             })
@@ -81,9 +87,9 @@ const actions = {
             logout(state.token).then(() => {
                 removeToken() // must remove  token  first
                 removeId()
-                //resetRouter()
-                localStorage.removeItem('token')
-                localStorage.removeItem('ID')
+                resetRouter()
+                window.localStorage.removeItem('token')
+                window.localStorage.removeItem('ID')
                 commit('RESET_STATE')
                 resolve()
             }).catch(error => {
@@ -96,6 +102,7 @@ const actions = {
     resetToken({ commit }) {
         return new Promise(resolve => {
             removeToken() // must remove  token  first
+            window.localStorage.removeItem('token')
             commit('RESET_STATE')
             resolve()
         })
