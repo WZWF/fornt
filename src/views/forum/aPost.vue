@@ -25,7 +25,12 @@
         <el-row>
           <el-col :span="24">
             <el-form-item style="margin-bottom: 20px" prop="title">
-              <MDinput v-model="postForm.title" :maxlength="100" name="name" required>
+              <MDinput
+                v-model="postForm.title"
+                :maxlength="100"
+                name="name"
+                required
+              >
                 标题
               </MDinput>
             </el-form-item>
@@ -75,25 +80,30 @@
         </el-form-item>
 
         <el-form-item prop="content" style="margin-bottom: 30px">
-          <editorHtml ref="editor" :modelValue="postForm.content" :height="400" />
+          <editorHtml
+            ref="editor"
+            :modelValue="postForm.content"
+            :height="400"
+          />
         </el-form-item>
 
         <el-form-item prop="cover" style="margin-bottom: 30px">
           <el-upload
-            :data="dataObj"
+          accept=".png,.jpg"
             :multiple="false"
             :show-file-list="false"
+            :headers="header"
             :on-success="handleImageSuccess"
             class="image-uploader"
             drag
-            action="https://httpbin.org/post"
+            :action="uploadAction"
           >
             <i class="el-icon-upload" />
             <div class="el-upload__text">
               将文件拖到此处上传封面，或<em>点击上传</em>
             </div>
           </el-upload>
-          <div v-show="postForm.cover.length > 0" class="image-preview">
+          <div class="image-preview">
             <div
               v-show="postForm.cover.length > 1"
               class="image-preview-wrapper"
@@ -113,6 +123,10 @@
 <script>
 import MDinput from "@/components/MDinput";
 import { mapState } from "vuex";
+import { getToken } from "@/utils/auth";
+import config from "@/config";
+import { getMovieListByName } from "@/api/search";
+import { rmImg } from "@/api/upload";
 
 // const defaultForm = {
 //   status: "draft",
@@ -165,11 +179,16 @@ export default {
       }
     };
     return {
+      header: {
+        Authentication: getToken(),
+      },
+      uploadAction: config.API_URL + "/upload/uploadImage",
       //postForm: Object.assign({}, defaultForm),
       postForm: {
         id: null,
         title: "",
         mid: null,
+        movieList: [],
         uid: this.user != null ? this.user.id : null,
         username: this.user != null ? this.user.name : null,
         cover: "",
@@ -224,12 +243,50 @@ export default {
     this.tempRoute = Object.assign({}, this.$route);
   },
   methods: {
-    querySearchAsync(queryString, cb) {
-      console.log(111);
+    querySearchAsync(name, cb) {
+      if (name != null && name.length > 0) {
+        getMovieListByName(name).then((res) => {
+          setTimeout(() => {
+            if (res.code === 200) {
+              this.movieList = res.obj;
+              cb(this.loadMovieList());
+            } else {
+              this.$message.error(res.message);
+              cb();
+            }
+          }, 600);
+        });
+      }
     },
-    rmImage(){},
-    handleSelect() {},
-    handleImageSuccess() {},
+    loadMovieList() {
+      let arr = new Array(0);
+      for (let i = 0; i < this.movieList.length; i++) {
+        arr.push({
+          id: this.movieList[i].id,
+          value: this.movieList[i].name,
+        });
+      }
+      return arr;
+    },
+    rmImage() {
+      rmImg({imagePath : this.postForm.cover}).then((res) => {
+        if (res.code === 200) {
+          this.postForm.cover = '';
+        } else {
+          this.$message.error(res.message);
+        }
+      })
+    },
+    handleSelect(item) {
+      this.postForm.mid = item.id;
+    },
+    handleImageSuccess(res) {
+      if (res.code === 200) {
+        this.postForm.cover = res.obj;
+      } else {
+        this.$message.error(res.message);
+      }
+    },
     fetchData(id) {
       fetchArticle(id)
         .then((response) => {
@@ -384,6 +441,54 @@ export default {
   .publish {
     position: absolute;
     right: 20px;
+  }
+}
+
+.image-uploader {
+  width: 35%;
+  float: left;
+}
+
+.image-preview {
+  width: 200px;
+  height: 200px;
+  position: relative;
+  border: 1px dashed #d9d9d9;
+  float: left;
+  margin-left: 50px;
+  .image-preview-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .image-preview-action {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    cursor: default;
+    text-align: center;
+    color: #fff;
+    opacity: 0;
+    font-size: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: opacity 0.3s;
+    cursor: pointer;
+    text-align: center;
+    line-height: 200px;
+    .el-icon-delete {
+      font-size: 36px;
+    }
+  }
+  &:hover {
+    .image-preview-action {
+      opacity: 1;
+    }
   }
 }
 </style>

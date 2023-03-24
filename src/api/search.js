@@ -7,3 +7,10 @@ export function getSearchResult(text, data) {
         params: data
     })
 }
+
+export function getMovieListByName(name) {
+    return request({
+        url: '/search/name/' + name,
+        method: 'get',
+    })
+}
