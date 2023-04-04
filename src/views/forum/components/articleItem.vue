@@ -59,6 +59,7 @@ export default {
     padding: 10px 0px;
     display: flex;
     .article-body {
+      width: 80%;
       flex: 1;
       .user-info {
         display: flex;
@@ -102,8 +103,12 @@ export default {
         display: inline-block;
       }
       .summary {
+        width: 100%;
         font-size: 14px;
         color: #86909c;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
       .article-info {
         margin-top: 10px;

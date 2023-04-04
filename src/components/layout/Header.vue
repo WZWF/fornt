@@ -7,6 +7,7 @@
           src="../../assets/img/logo.png"
           alt=""
         />
+        <div class="title">荐影</div>
         <div class="header-logo-text"></div>
       </div>
       <div class="header-links">
@@ -186,6 +187,13 @@ export default {
   border: 1px solid #ebeef5;
 }
 
+.title{
+  float: left;
+  font-size: 30px;
+  padding-top: 8px;
+  font-family:华文行楷;
+}
+
 .header-logo {
   padding-top: 10px;
   padding-left: 10%;
@@ -210,7 +218,7 @@ export default {
 
 .header-links {
   float: left;
-  padding-left: 50px;
+  padding-left: 5px;
   padding-top: 23px;
 }
 

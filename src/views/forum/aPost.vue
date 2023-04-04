@@ -9,6 +9,7 @@
           data-v-70c12ddb=""
           type="button"
           class="el-button el-button--primary el-button--mini"
+          @click="submitForm"
           style="margin-left: 10px"
         >
           <span> 发布 </span>
@@ -45,7 +46,7 @@
           prop="mid"
         >
           <el-autocomplete
-            v-model="postForm.mid"
+            v-model="selectMovie.value"
             :fetch-suggestions="querySearchAsync"
             placeholder="请输入选择相关电影"
             @select="handleSelect"
@@ -74,9 +75,6 @@
           <span v-show="contentShortLength" class="word-counter"
             >{{ contentShortLength }}/200</span
           >
-          <!-- <span v-show="!contentShortLength" class="word-counter"
-            >{{ contentShortLength }}/200</span
-          > -->
         </el-form-item>
 
         <el-form-item prop="content" style="margin-bottom: 30px">
@@ -84,7 +82,8 @@
             ref="editor"
             :modelValue="postForm.content"
             :height="400"
-          />
+            @change="getHtml"
+          ></editorHtml>
         </el-form-item>
 
         <el-form-item prop="cover" style="margin-bottom: 30px">
@@ -127,20 +126,7 @@ import { getToken } from "@/utils/auth";
 import config from "@/config";
 import { getMovieListByName } from "@/api/search";
 import { rmImg } from "@/api/upload";
-
-// const defaultForm = {
-//   status: "draft",
-//   title: "", // 文章题目
-//   content: "", // 文章内容
-//   content_short: "", // 文章摘要
-//   source_uri: "", // 文章外链
-//   image_uri: "", // 文章图片
-//   display_time: undefined, // 前台展示时间
-//   id: undefined,
-//   platforms: ["a-platform"],
-//   comment_disabled: false,
-//   importance: 0,
-// };
+import { getId } from "@/api/common";
 
 export default {
   name: "aPost",
@@ -150,6 +136,16 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  computed: {
+    contentShortLength() {
+      return this.postForm.summary == null ? 0 : this.postForm.summary.length;
+    },
+    ...mapState({
+      user: function () {
+        return this.$store.state.user;
+      },
+    }),
   },
   data() {
     const validateRequire = (rule, value, callback) => {
@@ -163,27 +159,11 @@ export default {
         callback();
       }
     };
-    const validateSourceUri = (rule, value, callback) => {
-      if (value) {
-        if (validURL(value)) {
-          callback();
-        } else {
-          this.$message({
-            message: "外链url填写不正确",
-            type: "error",
-          });
-          callback(new Error("外链url填写不正确"));
-        }
-      } else {
-        callback();
-      }
-    };
     return {
       header: {
         Authentication: getToken(),
       },
       uploadAction: config.API_URL + "/upload/uploadImage",
-      //postForm: Object.assign({}, defaultForm),
       postForm: {
         id: null,
         title: "",
@@ -195,52 +175,39 @@ export default {
         content: "",
         summary: "",
       },
+      selectMovie:{
+        value:'',
+      },
       loading: false,
       dataObj: null,
       userListOptions: [],
       rules: {
-        image_uri: [{ validator: validateRequire }],
         title: [{ validator: validateRequire }],
         content: [{ validator: validateRequire }],
-        source_uri: [{ validator: validateSourceUri, trigger: "blur" }],
       },
-      tempRoute: {},
     };
   },
-  computed: {
-    contentShortLength() {
-      return this.postForm.summary == null ? 0 : this.postForm.summary.length;
-    },
-    ...mapState({
-      user: function () {
-        console.log(111);
-        console.log(this.$store.getters);
-        return this.$store.state.user;
-      },
-    }),
-    displayTime: {
-      // set and get is useful when the data
-      // returned by the back end api is different from the front end
-      // back end return => "2013-06-25 06:59:25"
-      // front end need timestamp => 1372114765000
-      get() {
-        return +new Date(this.postForm.display_time);
-      },
-      set(val) {
-        this.postForm.display_time = new Date(val);
-      },
-    },
-  },
   created() {
+    if (!this.user.token) {
+      this.$router.push({
+          name: "login",
+          query: { redirect: this.$router.currentRoute.fullPath },
+        });
+    } else {
+      this.postForm.uid = this.user.id;
+      this.postForm.username = this.user.name;
+    }
     if (this.isEdit) {
       const id = this.$route.params && this.$route.params.id;
       this.fetchData(id);
     }
-
-    // Why need to make a copy of this.$route here?
-    // Because if you enter this page and quickly switch tag, may be in the execution of the setTagsViewTitle function, this.$route is no longer pointing to the current page
-    // https://github.com/PanJiaChen/vue-element-admin/issues/1221
-    this.tempRoute = Object.assign({}, this.$route);
+    getId().then((res) => {
+      if (res.code === 200) {
+        this.postForm.id = res.obj;
+      } else {
+        location.reload();
+      }
+    })
   },
   methods: {
     querySearchAsync(name, cb) {
@@ -257,6 +224,9 @@ export default {
           }, 600);
         });
       }
+    },
+    getHtml(html){
+      this.postForm.content = html;
     },
     loadMovieList() {
       let arr = new Array(0);
@@ -278,6 +248,7 @@ export default {
       })
     },
     handleSelect(item) {
+      this.selectMovie = item;
       this.postForm.mid = item.id;
     },
     handleImageSuccess(res) {
@@ -296,26 +267,10 @@ export default {
           this.postForm.title += `   Article Id:${this.postForm.id}`;
           this.postForm.content_short += `   Article Id:${this.postForm.id}`;
 
-          // set tagsview title
-          this.setTagsViewTitle();
-
-          // set page title
-          this.setPageTitle();
         })
         .catch((err) => {
           console.log(err);
         });
-    },
-    setTagsViewTitle() {
-      const title = "Edit Article";
-      const route = Object.assign({}, this.tempRoute, {
-        title: `${title}-${this.postForm.id}`,
-      });
-      this.$store.dispatch("tagsView/updateVisitedView", route);
-    },
-    setPageTitle() {
-      const title = "Edit Article";
-      document.title = `${title} - ${this.postForm.id}`;
     },
     submitForm() {
       console.log(this.postForm);
@@ -336,31 +291,6 @@ export default {
         }
       });
     },
-    // draftForm() {
-    //   if (
-    //     this.postForm.content.length === 0 ||
-    //     this.postForm.title.length === 0
-    //   ) {
-    //     this.$message({
-    //       message: "请填写必要的标题和内容",
-    //       type: "warning",
-    //     });
-    //     return;
-    //   }
-    //   this.$message({
-    //     message: "保存成功",
-    //     type: "success",
-    //     showClose: true,
-    //     duration: 1000,
-    //   });
-    //   this.postForm.status = "draft";
-    // },
-    getRemoteUserList(query) {
-      searchUser(query).then((response) => {
-        if (!response.data.items) return;
-        this.userListOptions = response.data.items.map((v) => v.name);
-      });
-    },
     returnLast() {
       this.$router.go(-1);
     },
@@ -377,7 +307,6 @@ export default {
 
     .postInfo-container {
       position: relative;
-      @include clearfix;
       margin-bottom: 10px;
 
       .postInfo-container-item {

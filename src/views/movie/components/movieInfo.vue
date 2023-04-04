@@ -65,7 +65,9 @@
         </div>
       </div>
     </div>
-    <div class="opera-box">
+    <div class="opera-box"
+    @mouseleave="resetScore"
+    >
       <div>请评分：</div>
       <div class="rankstar">
         <div
@@ -96,14 +98,13 @@
 <script>
 import rankstar from "@/components/rankstar/rankstar.vue";
 import { getMovieDetail } from "@/api/movie.js";
+import { getMovieScoreByUid, ratingMovie } from "@/api/rating.js";
 import { mapState } from "vuex";
 export default {
   name: "movieInfo",
   computed: {
     ...mapState({
       user: function () {
-        console.log(111);
-        console.log(this.$store.getters);
         return this.$store.state.user;
       },
     }),
@@ -116,6 +117,7 @@ export default {
       if (this.user.token) {
         this.$router.push("/publish?id=" + this.id);
       } else {
+        this.$message.error("请先登录");
         this.$router.push({
           name: "login",
           query: { redirect: this.$router.currentRoute.fullPath },
@@ -156,15 +158,61 @@ export default {
       this.starList.list = list;
     },
     sendScore(index) {
-      console.log(index);
-    }
+      if (this.user.token) {
+        index = index + 1;
+        ratingMovie(this.id, this.user.id, index).then((res) => {
+          if (res.code === 200) {
+            if (this.score == 0) {
+              this.detailData.rateCount = this.detailData.rateCount + 1;
+            }
+            this.score = index;
+            this.resetScore();
+          } else {
+            this.$message.error(res.message);
+          }
+        })
+      } else {
+        this.$message.error("请先登录");
+        this.$router.push({
+          name: "login",
+          query: { redirect: this.$router.currentRoute.fullPath },
+        });
+      }
+    },
+    async getScore() {
+      if (this.user.token) {
+        getMovieScoreByUid(this.id, this.user.id).then((res) => {
+          if (res.code === 200) {
+            this.score = res.obj;
+            this.resetScore()
+          } else {
+            this.$message.error(res.message);
+          }
+        })
+      }
+    },
+    resetScore() {
+      let list = [];
+      let index = this.score - 1;
+      this.starList.list.forEach((item, _index) => {
+        if (_index <= index) {
+          item.state = "full";
+        } else {
+          item.state = "normal";
+        }
+        list.push({ ...item });
+      });
+      this.starList.list = list;
+    },
   },
   created() {
     this.getDetail(this.id);
+    this.getScore();
   },
   data() {
     return {
       id : this.$route.params.id,
+      score : 0,
       loading:false,
       detailData: {},
       actorsList: {

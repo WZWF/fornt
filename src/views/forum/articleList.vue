@@ -22,6 +22,31 @@
         >
           最新发布
         </div>
+        <div class="top-op">
+          <el-row>
+            <el-col :span="12" style="margin-right: 10px;">
+              <el-input
+                placeholder="搜索帖子"
+                v-model="queryInfo.username"
+                clearable
+                @clear="fetchData"
+                @input="searchList"
+              >
+                <el-button
+                  slot="append"
+                  icon="el-icon-search"
+                  @click="searchList"
+                >
+                </el-button>
+              </el-input>
+            </el-col>
+            <el-col :span="2">
+              <el-button type="primary" @click="showAddDialog" icon="el-icon-plus"
+                >发帖</el-button
+              >
+            </el-col>
+          </el-row>
+        </div>
       </div>
       <div class="article-list">
         <dataList
@@ -83,7 +108,7 @@ export default {
       queryInfo: {
         curPage: 1,
         pageSize: 15,
-        orderType: 0
+        orderType: 0,
       },
       loading: false,
     };
@@ -103,12 +128,12 @@ export default {
     },
     changeOrderType(type) {
       this.queryInfo.orderType = type;
-      this.fetchData()
+      this.fetchData();
     },
   },
   created() {
-    this.fetchData()
-  }
+    this.fetchData();
+  },
 };
 </script>
 
@@ -119,6 +144,11 @@ export default {
   padding-top: 5px;
   .article-panel {
     background: #fff;
+    .top-op {
+      width: 30%;
+      position: absolute;
+      right: 5%;
+    }
     .top-tab {
       display: flex;
       align-items: center;

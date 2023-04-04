@@ -124,7 +124,6 @@
       </el-badge>
       <!--评论-->
       <el-badge
-        v-if="showComment"
         :value="articleInfo.commentCount"
         type="info"
         :hidden="!articleInfo.commentCount > 0"
@@ -132,7 +131,6 @@
         <div
           class="quick-item"
           @click="goToPostion('view-comment')"
-          v-if="showComment"
         >
           <span class="iconfont icon-comment"></span>
         </div>
@@ -230,7 +228,9 @@ export default {
         });
       }
     },
-    showComment() {},
+    goToPostion(id){
+      document.querySelector("#" + id).scrollIntoView();
+    },
     previewImgList() {},
     updateCommentCount(commentCount) {
       this.commentCount = commentCount;

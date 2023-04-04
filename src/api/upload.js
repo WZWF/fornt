@@ -7,3 +7,11 @@ export function rmImg(data) {
         params: data
     })
 }
+
+export function deleteImgForRemove(data) {
+    return request({
+        url: '/upload/deleteImgByBatch',
+        method: 'delete',
+        params: data
+    })
+}

@@ -73,7 +73,7 @@ export const routes = [
             },
             {
                 path: '/forum',
-                component: () => import("@/views/forum/index")
+                component: () => import("@/views/forum/articleList")
             },
             {
                 path: '/me',

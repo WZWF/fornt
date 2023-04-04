@@ -14,11 +14,14 @@
     </div>
     <div class="score-add">
       <div>给个评价吧：</div>
-      <div class="rankstar">
+      <div class="rankstar"
+      @mouseleave="resetScore"
+      >
         <div
           :class="['star-item', item.state]"
           v-for="(item, index) in starList.list || []"
           :key="index"
+          @click="sendScore(index)"
           @mouseenter="changeScore(index)"
         ></div>
       </div>
@@ -27,7 +30,7 @@
       <textarea
         id="commentInput"
         placeholder="写评论..."
-        v-model-trim="content"
+        v-model="content"
       ></textarea>
     </div>
     <div id="submitBtn" @click="submit">提交</div>
@@ -35,8 +38,10 @@
 </template>
 
 <script>
-import { getMovieDetail } from "@/api/movie.js";
+import { getMovieDetail, postComment } from "@/api/movie.js";
 import { getToken } from "@/utils/auth.js";
+import { getId } from "@/api/common.js";
+import { getMovieScoreByUid, ratingMovie } from "@/api/rating.js";
 import { mapState } from "vuex";
 export default {
   name: "publish",
@@ -47,6 +52,13 @@ export default {
       starList: {
         list: new Array(5).fill({ state: "normal" }),
       },
+      commentForm: {
+        id: "",
+        uid: "",
+        mid: "",
+        comment: ""
+      },
+      score: 0,
     };
   },
   computed: {
@@ -55,8 +67,6 @@ export default {
     },
     ...mapState({
       user: function () {
-        console.log(111);
-        console.log(this.$store.getters);
         return this.$store.state.user;
       },
     }),
@@ -74,7 +84,6 @@ export default {
       await getMovieDetail(this.id).then((res) => {
         if (res.code === 200) {
           this.movieData = res.obj;
-          console.log(this.movieData);
         } else {
           this.$message.error(res.message);
         }
@@ -92,11 +101,72 @@ export default {
       });
       this.starList.list = list;
     },
-    submit() {
-      let count = 0;
-      this.starList.list.forEach((item) => {
-        if (item.state == "full") count++;
+    sendScore(index) {
+      if (this.user.token) {
+        index = index + 1;
+        ratingMovie(this.id, this.user.id, index).then((res) => {
+          if (res.code === 200) {
+            this.score = index;
+            this.resetScore();
+          } else {
+            this.$message.error(res.message);
+          }
+        })
+      } else {
+        this.$message.error("请先登录");
+        this.$router.push({
+          name: "login",
+          query: { redirect: this.$router.currentRoute.fullPath },
+        });
+      }
+      
+    },
+    async getScore() {
+      if (this.user.token) {
+        getMovieScoreByUid(this.id, this.user.id).then((res) => {
+          if (res.code === 200) {
+            this.score = res.obj;
+            this.resetScore();
+          } else {
+            this.$message.error(res.message);
+          }
+        })
+      }
+    },
+    resetScore() {
+      let list = [];
+      let index = this.score - 1;
+      this.starList.list.forEach((item, _index) => {
+        if (_index <= index) {
+          item.state = "full";
+        } else {
+          item.state = "normal";
+        }
+        list.push({ ...item });
       });
+      this.starList.list = list;
+    },
+    submit() {
+      this.commentForm.comment = this.content;
+      postComment(this.commentForm).then((res) => {
+        if (res.code === 200) {
+          this.$message.success("发布影评成功");
+          this.$router.push({path: 'movie/' + this.id});
+        } else {
+          this.$message.error(res.message);
+        }
+      })
+    },
+    async initForm() {
+      getId().then((res) => {
+        if (res.code === 200) {
+          this.commentForm.id = res.obj;
+        } else {
+          this.$message.error("未知错误！请刷新后重试！")
+        }
+      })
+      this.commentForm.uid = this.user.id;
+      this.commentForm.mid = this.id;
     },
   },
   created() {
@@ -106,6 +176,8 @@ export default {
           query: { redirect: this.$router.currentRoute.fullPath },
         });
     }
+    this.initForm();
+    this.getScore();
   }
 };
 </script>

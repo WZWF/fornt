@@ -22,14 +22,6 @@ export function getMovieRecomendeDetail(id) {
     })
 }
 
-export function getMovieComments(data) {
-    return request({
-        url: '/movie/comments',
-        method: 'get',
-        data
-    })
-}
-
 export function listAllPoster() {
     return request({
         url: "/home/getCarousels",
@@ -41,5 +33,21 @@ export function getArticleMovieInfo(id) {
     return request({
         url: "/movie/articleMovieInfo/" + id,
         method: 'get'
+    })
+}
+
+export function getMovieComments(data) {
+    return request({
+        url: '/movie/comments',
+        method: 'get',
+        params: data,
+    })
+}
+
+export function postComment(data) {
+    return request({
+        url: '/movie/comment',
+        method: 'post',
+        data
     })
 }

@@ -3,7 +3,7 @@
     <div class="left-content">
       <movieInfo />
       <movieRecomende />
-      <!-- <movieComent /> -->
+      <movieComent />
     </div>
   </div>
 </template>

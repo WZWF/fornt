@@ -3,16 +3,16 @@
     <Toolbar
       style="border-bottom: 1px solid #ccc"
       :editor="editor"
-      :defultConfig="toolbarConfig"
+      :defaultConfig="toolbarConfig"
       :mode="mode"
     />
     <Editor
-      :style="{ 'height': height + 'px', 'overflow-y': 'hidden' }"
+      :style="{ height: height + 'px', 'overflow-y': 'hidden' }"
       :model-value="modelValue"
-      :defultConfig="editorConfig"
+      :defaultConfig="editorConfig"
       :mode="mode"
       @onCreated="onCreated"
-      @OnChange="onChange"
+      @onChange="onChange"
     />
   </div>
 </template>
@@ -20,6 +20,9 @@
 <script>
 import "@wangeditor/editor/dist/css/style.css";
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
+import config from "@/config";
+import { getToken } from "@/utils/auth";
+import { deleteImgForRemove } from "@/api/upload";
 
 export default {
   name: "editorHtml",
@@ -39,25 +42,33 @@ export default {
       mode: "default",
       editor: null,
       toolbarConfig: {
-        excludeKey: ["uploadVideo"],
+        excludeKeys: ["group-video"],
       },
       editorConfig: {
-        placeholder: '请输入内容...',
-        excludeKey: ["uploadVideo"],
-        server: "/api/upload/forumImage",
-        fieldName: "file",
-        custonInsert(responseData, insertFn) {
-          if (responseData.code === 200) {
-            insertFn(
-              //this.globalInfo.imageUrl + responseData.data.fieldName, //文件路径
-              "",
-              ""
-            );
-            return;
-          } else {
-            this.$message.error(responseData.message);
-          }
+        placeholder: "请输入内容...",
+        excludeKeys: ["group-video"],
+        maxFileSize: 3 * 1024 * 1024,
+        MENU_CONF: {
+          uploadImage: {
+            server: config.API_URL + "/upload/uploadTempImage",
+            fieldName: "file",
+            headers: {
+              Authentication: getToken(),
+            },
+            customInsert(responseData, insertFn) {
+              if (responseData.code === 200) {
+                insertFn(responseData.obj, "", "");
+                return;
+              } else {
+                this.$message.error(responseData.message);
+              }
+            },
+          },
+          emotion: {
+            emotions: "😀 😃 😄 😁 😆 😅 😂 🤣 😊 😇 🙂 🙃 😉".split(" "), // 数组
+          },
         },
+        mode: "default",
       },
     };
   },
@@ -68,7 +79,7 @@ export default {
   },
   methods: {
     onChange(editor) {
-      this.$emit("update:modelValue", editor.getHtml());
+      this.$emit("change", editor.getHtml());
     },
     onCreated(editor) {
       this.editor = Object.seal(editor); // 一定要用 Object.seal() ，否则会报错
@@ -78,8 +89,8 @@ export default {
 </script>
 
 <style>
-.editor-html{
-    border: 1px solid #ddd;
+.editor-html {
+  border: 1px solid #ddd;
 }
 /* .w-e-text-container {
   height: 500px !important;
