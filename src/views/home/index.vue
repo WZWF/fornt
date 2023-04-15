@@ -1,6 +1,11 @@
 <template>
   <div class="app">
-    <el-carousel height="500px" type="card" indicator-position="outside" @change="changeItem">
+    <el-carousel
+      height="500px"
+      type="card"
+      indicator-position="outside"
+      @change="changeItem"
+    >
       <div>
         <el-carousel-item v-for="(item, index) in posterList" :key="index">
           <img
@@ -18,6 +23,25 @@
         <h3>{{ title }}</h3>
       </div>
     </el-carousel>
+    <div class="main">
+      <div class="panel" v-if="recommentData.length">
+        <div class="panel-header">
+          <span class="panel-title">
+            <span
+              >系统推荐</span
+            >
+          </span>
+        </div>
+      </div>
+      <div>
+        <movieItem
+          v-for="(item, index) in recommentData"
+          :key="index"
+          :itemData="item"
+          class="movie-item"
+        ></movieItem>
+      </div>
+    </div>
 
     <!-- <div class="main">
       <div class="movie-grid">
@@ -69,14 +93,82 @@
 
 <script>
 import { listAllPoster } from "@/api/movie";
+import movieItem from "@/components/movieItem/movieItem.vue";
 
 export default {
+  components: {
+    movieItem,
+  },
   data() {
     return {
-      topList: [],
-      filmList: [],
+      recommentData: [
+        {
+          id: "1",
+          title: "Toy Story (1995)",
+          posterURL:
+            "http://124.222.196.87:9000/movie/movie_photo/images/1/poster.jpg",
+          score: 3.8724696356275303,
+        },
+        {
+          id: "1",
+          title: "Toy Story (1995)",
+          posterURL:
+            "http://124.222.196.87:9000/movie/movie_photo/images/1/poster.jpg",
+          score: 3.8724696356275303,
+        },
+        {
+          id: "1",
+          title: "Toy Story (1995)",
+          posterURL:
+            "http://124.222.196.87:9000/movie/movie_photo/images/1/poster.jpg",
+          score: 3.8724696356275303,
+        },
+        {
+          id: "1",
+          title: "Toy Story (1995)",
+          posterURL:
+            "http://124.222.196.87:9000/movie/movie_photo/images/1/poster.jpg",
+          score: 3.8724696356275303,
+        },
+        {
+          id: "1",
+          title: "Toy Story (1995)",
+          posterURL:
+            "http://124.222.196.87:9000/movie/movie_photo/images/1/poster.jpg",
+          score: 3.8724696356275303,
+        },
+        {
+          id: "1",
+          title: "Toy Story (1995)",
+          posterURL:
+            "http://124.222.196.87:9000/movie/movie_photo/images/1/poster.jpg",
+          score: 3.8724696356275303,
+        },
+        {
+          id: "1",
+          title: "Toy Story (1995)",
+          posterURL:
+            "http://124.222.196.87:9000/movie/movie_photo/images/1/poster.jpg",
+          score: 3.8724696356275303,
+        },
+        {
+          id: "1",
+          title: "Toy Story (1995)",
+          posterURL:
+            "http://124.222.196.87:9000/movie/movie_photo/images/1/poster.jpg",
+          score: 3.8724696356275303,
+        },
+        {
+          id: "1",
+          title: "Toy Story (1995)",
+          posterURL:
+            "http://124.222.196.87:9000/movie/movie_photo/images/1/poster.jpg",
+          score: 3.8724696356275303,
+        },
+      ],
+      recommentData:[],
       posterList: [],
-      title : "",
+      title: "",
     };
   },
   methods: {
@@ -88,13 +180,11 @@ export default {
     getList() {
       listAllPoster().then((res) => {
         this.posterList = res.obj == null ? [] : res.obj;
-        if (res.obj != null) this.title = res.obj[0].title
+        if (res.obj != null) this.title = res.obj[0].title;
       });
     },
     changeItem(idx) {
-      console.log(idx
-      );
-      this.title = this.posterList[idx].title
+      this.title = this.posterList[idx].title;
     },
   },
 
@@ -105,21 +195,31 @@ export default {
 import "@/assets/css/home.css";
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .app {
   padding: 50px 120px;
 }
 
 .main {
   float: left;
-  padding-top: 40px;
+  padding: 40px;
+  padding-top: 0px;
+
+  .panel {
+    margin: 20px;
+     .panel-title{
+       color: #000;
+       font-family: 微软雅黑;
+     }
+  }
 }
 
 .carousel_div {
   position: absolute;
   width: 100%;
   text-align: center;
-  background-color: rgb(80, 80, 80, 0.1);
+  //background-color: rgb(80, 80, 80, 0.1);
+  background: none;
   box-shadow: -11px -34px 100px 10px grey;
   bottom: 24px;
   z-index: 10;

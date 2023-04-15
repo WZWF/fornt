@@ -13,7 +13,7 @@
             src="@/assets/img/logo.png"
             alt=""
           />
-          <div class="login-form-text">小小电影 - 登录</div>
+          <div class="login-form-text">荐影 - 登录</div>
         </div>
         <div style="color: #91949c; font-weight: bolder">
           <el-form-item prop="username">

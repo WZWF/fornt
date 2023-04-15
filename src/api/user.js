@@ -110,9 +110,9 @@ export function getRelatedArticles(id, data, num) {
     })
 }
 
-export function getUserMovieComment(id, data, num) {
+export function getUserMovieComment(id, data) {
     return service({
-        url:'/user/relatedArticles/' + num + '/' + id,
+        url:'/user/userMovieComment/' + id,
         method: 'get',
         params: data,
     })

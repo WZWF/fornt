@@ -168,7 +168,7 @@ import {
   getUserCenterInfo,
   getUserRatingMovie,
   getRelatedArticles,
-  getUserMovieComment
+  getUserMovieComment,
 } from "@/api/user.js";
 import { getDistribution } from "@/api/rating.js";
 export default {
@@ -245,6 +245,7 @@ export default {
     setData(res) {
       this.data = [];
       this.count = 0;
+      console.log(res)
       if (res.code === 200) {
         this.data = res.obj.objs == null ? [] : res.obj.objs;
         this.count = res.obj.count;
@@ -267,6 +268,35 @@ export default {
         getUserMovieComment(this.id, this.queryInfo).then((res) => {
           this.setData(res);
         });
+        // let res = {
+        //   code: 200,
+        //   obj: {
+        //     objs: [
+        //       {
+        //         id: "150793960494354432",
+        //         head: "/movie/user_image/2023/03/09/943b4d64ee2c4e31970de66f0292db0a.png",
+        //         userImg:
+        //           "http://124.222.196.87:9000/movie/user_image/2023/03/09/943b4d64ee2c4e31970de66f0292db0a.png",
+        //         name: "abc",
+        //         comment: "11111********111",
+        //         createTime: "2023-04-02 21:53:11",
+        //         movie: "hero",
+        //         mid: 1
+        //       },
+        //       {
+        //         id: "150793960494354432",
+        //         head: "/movie/user_image/2023/03/09/943b4d64ee2c4e31970de66f0292db0a.png",
+        //         userImg:
+        //           "http://124.222.196.87:9000/movie/user_image/2023/03/09/943b4d64ee2c4e31970de66f0292db0a.png",
+        //         name: "abc",
+        //         comment: "1111111111",
+        //         rating: 3.0,
+        //         createTime: "2023-04-02 21:53:11",
+        //       },
+        //     ],
+        //   },
+        // };
+        // this.setData(res);
       } else {
         getRelatedArticles(this.id, this.queryInfo, this.activeTabName).then(
           (res) => {
