@@ -27,7 +27,7 @@
             <el-col :span="12" style="margin-right: 10px;">
               <el-input
                 placeholder="搜索帖子"
-                v-model="queryInfo.username"
+                v-model="queryInfo.keyword"
                 clearable
                 @clear="fetchData"
                 @input="searchList"
@@ -41,7 +41,7 @@
               </el-input>
             </el-col>
             <el-col :span="2">
-              <el-button type="primary" @click="showAddDialog" icon="el-icon-plus"
+              <el-button type="primary" @click="toAddPost" icon="el-icon-plus"
                 >发帖</el-button
               >
             </el-col>
@@ -66,6 +66,7 @@
 import { getArticleList } from "@/api/forum";
 import articleItem from "./components/articleItem";
 import dataList from "./components/dataList";
+import { mapState } from "vuex";
 
 export default {
   components: {
@@ -109,11 +110,32 @@ export default {
         curPage: 1,
         pageSize: 15,
         orderType: 0,
+        keyword: "",
       },
       loading: false,
     };
   },
+  computed:{
+    ...mapState({
+      user: function () {
+        return this.$store.state.user;
+      },
+    }),
+  },
   methods: {
+    searchList() {
+      this.fetchData();
+    },
+    toAddPost() {
+      if (!this.user.token) {
+      this.$router.push({
+          name: "login",
+          query: { redirect: this.$router.currentRoute.fullPath },
+        });
+    } else {
+      this.$router.push({name: "addPost"});
+    }
+    },
     async fetchData() {
       this.loading = true;
       getArticleList(this.queryInfo).then((res) => {

@@ -14,3 +14,10 @@ export function ratingMovie(mid, uid, score) {
         params: {uid, score}
     })
 }
+
+export function getDistribution(uid) {
+    return request({
+        url: '/user/ratingDistribution/' + uid,
+        method: 'get',
+    })
+}

@@ -2,10 +2,10 @@
   <div class="movie-coments">
     <h2 class="intro-title">{{ title }} 的影评 ({{ count }})</h2>
     <div class="scroll-warp">
-      <div class="comment-item" v-for="item in detailData" :key="item.id">
+      <div class="comment-item" v-for="(item, index) in detailData" :key="index">
         <div class="top-content">
           <img class="avatar" :src="item.userImg" />
-          <span class="nickname">{{ item.name }}</span>
+          <span class="nickname"><router-link :to="`/user/${item.id}`">{{ item.name }}</router-link></span>
           <div v-if="item.rating" class="rankstar">
             <rankstar :score="item.rating * 2"></rankstar>
           </div>

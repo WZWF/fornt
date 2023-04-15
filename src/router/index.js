@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Layout from "@/components/layout/Layout"
-import Me from "@/views/me/index"
+import Me from "@/views/user/index"
 import Router from 'vue-router'
 import { getToken } from "@/utils/auth"
 import store from '@/store'
@@ -42,7 +42,7 @@ export const routes = [
                 component: () => import("@/views/forum/articleDetail")
             },
             {
-                path: 'movies',
+                path: '/movies',
                 component: () => import("@/views/movie/all/index")
             },
             {
@@ -61,10 +61,7 @@ export const routes = [
             },
             {
                 path: '/addPost',
-                component: () => import("@/views/forum/addPost")
-            },
-            {
-                path: '/ap',
+                name: 'addPost',
                 component: () => import("@/views/forum/aPost")
             },
             {
@@ -81,10 +78,14 @@ export const routes = [
                 children: [
                     {
                         path: 'setting',
-                        component: () => import("@/views/me/setting")
+                        component: () => import("@/views/user/setting")
                     },
                 ]
             },
+            {
+                path: '/user/:id',
+                component: () => import("@/views/user/userCenter")
+            }
         ]
     }
 

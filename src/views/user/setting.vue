@@ -235,6 +235,11 @@ export default {
         console.log(obj)
         this.user = obj;
       });
+    } else {
+      this.$router.push({
+          name: "login",
+          query: { redirect: this.$router.currentRoute.fullPath },
+        });
     }
   },
 

@@ -47,7 +47,11 @@
           <div class="detail" id="detail" v-html="articleInfo.content"></div>
         </div>
         <!--相关电影-->
-        <div class="attachment-panel" id="view-attachment" v-if="articleInfo.mid">
+        <div
+          class="attachment-panel"
+          id="view-attachment"
+          v-if="articleInfo.mid"
+        >
           <!-- <div class="title">附件</div>
         <div class="attachment-info">
           <div class="iconfont icon-zip item"></div>
@@ -128,10 +132,7 @@
         type="info"
         :hidden="!articleInfo.commentCount > 0"
       >
-        <div
-          class="quick-item"
-          @click="goToPostion('view-comment')"
-        >
+        <div class="quick-item" @click="goToPostion('view-comment')">
           <span class="iconfont icon-comment"></span>
         </div>
       </el-badge>
@@ -139,12 +140,9 @@
       <!-- <div class="quick-item" @click="goToPostion('view-attachment')">
           <span class="iconfont icon-attachment"></span>
         </div> -->
-      <!--图片预览-->
-      <!-- <ImageViewer
-          ref="imageViewerRef"
-          :imageList="previewImgList"
-        ></ImageViewer> -->
     </div>
+    <!--图片预览-->
+    <imageViewer ref="imageViewerRef" :imageList="previewImgList"></imageViewer>
   </div>
 </template>
 
@@ -192,6 +190,8 @@ export default {
       hasLike: false,
       id: null,
       commentCount: 0,
+      imageViewerRef: null,
+      previewImgList: [],
       //quickPanelLeft: (window.innerWidth - this.global.bodyWidth) / 2 - 110,
     };
   },
@@ -211,15 +211,18 @@ export default {
         if (this.hasLike) {
           this.$message.error("您已经点过赞了");
         } else {
-          likeArticle(this.id, this.user.id, this.articleInfo.uid).then((res) => {
-            if (res.code === 200) {
-              this.articleInfo.likeCount = Number(this.articleInfo.likeCount) + 1;
-              this.hasLike = true;
-              this.$message.success("点赞成功");
-            } else {
-              this.$message.error(res.message);
+          likeArticle(this.id, this.user.id, this.articleInfo.uid).then(
+            (res) => {
+              if (res.code === 200) {
+                this.articleInfo.likeCount =
+                  Number(this.articleInfo.likeCount) + 1;
+                this.hasLike = true;
+                this.$message.success("点赞成功");
+              } else {
+                this.$message.error(res.message);
+              }
             }
-          })
+          );
         }
       } else {
         this.$router.push({
@@ -228,10 +231,25 @@ export default {
         });
       }
     },
-    goToPostion(id){
+    goToPostion(id) {
       document.querySelector("#" + id).scrollIntoView();
     },
-    previewImgList() {},
+    imagePreview() {
+      this.$nextTick(() => {
+        const imageNodeList = document
+          .querySelector("#detail")
+          .querySelectorAll("img");
+        const imageList = [];
+        imageNodeList.forEach((item, index) => {
+          const src = item.getAttribute("src");
+          imageList.push(src);
+          item.addEventListener("click", () => {
+            this.$refs.imageViewerRef.show(index);
+          });
+        });
+        this.previewImgList = imageList;
+      });
+    },
     updateCommentCount(commentCount) {
       this.commentCount = commentCount;
     },
@@ -239,8 +257,9 @@ export default {
       await getArticleDetail(id).then((res) => {
         if (res.code === 200) {
           this.articleInfo = res.obj == null ? {} : res.obj;
+          this.imagePreview();
         } else {
-          this.$message.error(res.message)
+          this.$message.error(res.message);
         }
       });
       if (this.articleInfo !== null && this.articleInfo !== undefined) {
@@ -252,7 +271,7 @@ export default {
             if (res.code === 200) {
               this.movieData = res.obj == null ? {} : res.obj;
             } else {
-              this.$message.error(res.message)
+              this.$message.error(res.message);
             }
           });
         }
@@ -275,7 +294,7 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 .container-body {
   position: relative;
   margin: 12px auto;
@@ -347,15 +366,19 @@ export default {
         }
       }
       .detail {
+        width: 100%;
         letter-spacing: 1px;
         line-height: 22px;
         a {
           text-decoration: none;
           color: #007fff;
         }
-        img {
-          max-width: 90%;
-          cursor: pointer;
+        p {
+          width: 100%;
+          img {
+            max-width: 80%;
+            cursor: pointer;
+          }
         }
       }
     }

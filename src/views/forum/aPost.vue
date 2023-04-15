@@ -127,6 +127,7 @@ import config from "@/config";
 import { getMovieListByName } from "@/api/search";
 import { rmImg } from "@/api/upload";
 import { getId } from "@/api/common";
+import { postArticle } from '@/api/forum';
 
 export default {
   name: "aPost",
@@ -197,10 +198,10 @@ export default {
       this.postForm.uid = this.user.id;
       this.postForm.username = this.user.name;
     }
-    if (this.isEdit) {
+    /*if (this.isEdit) {
       const id = this.$route.params && this.$route.params.id;
       this.fetchData(id);
-    }
+    }*/
     getId().then((res) => {
       if (res.code === 200) {
         this.postForm.id = res.obj;
@@ -258,7 +259,7 @@ export default {
         this.$message.error(res.message);
       }
     },
-    fetchData(id) {
+    /*fetchData(id) {
       fetchArticle(id)
         .then((response) => {
           this.postForm = response.data;
@@ -271,20 +272,19 @@ export default {
         .catch((err) => {
           console.log(err);
         });
-    },
+    },*/
     submitForm() {
-      console.log(this.postForm);
       this.$refs.postForm.validate((valid) => {
         if (valid) {
           this.loading = true;
-          this.$notify({
-            title: "成功",
-            message: "发布文章成功",
-            type: "success",
-            duration: 2000,
-          });
-          this.postForm.status = "published";
-          this.loading = false;
+          postArticle(this.postForm).then((res) => {
+            if (res.code === 200) {
+              this.$message.success("文章发布成功！请等待管理员审核！");
+              this.returnLast();
+            } else {
+              this.$message.error(res.message);
+            }
+          })
         } else {
           console.log("error submit!!");
           return false;

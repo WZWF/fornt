@@ -11,15 +11,15 @@
         <div class="header-logo-text"></div>
       </div>
       <div class="header-links">
-        <el-link href="/" class="header-link" :underline="false">首页</el-link>
-        <el-link href="/movies" class="header-link" :underline="false"
-          >电影</el-link
+        <router-link to="/" class="header-link" :underline="false">首页</router-link>
+        <router-link to="/movies" class="header-link" :underline="false"
+          >电影</router-link
         >
-        <el-link href="/recomend" class="header-link" :underline="false"
-          >推荐</el-link
+        <router-link to="/recomend" class="header-link" :underline="false"
+          >推荐</router-link
         >
-        <el-link href="/forum" class="header-link" :underline="false"
-          >论坛</el-link
+        <router-link to="/forum" class="header-link" :underline="false"
+          >论坛</router-link
         >
       </div>
 
@@ -56,43 +56,30 @@
         </el-button>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>
-            <el-link
+            <router-link
               :underline="false"
-              href="/me/cart"
-              style="padding-right: 7px"
-            >
-              <i
-                style="font-size: 15px; padding-right: 3px"
-                class="el-icon-shopping-cart-2"
-              ></i
-              >购物车
-            </el-link>
-          </el-dropdown-item>
-          <el-dropdown-item>
-            <el-link
-              :underline="false"
-              href="/me/order"
-              style="padding-right: 7px"
-            >
-              <i
-                style="font-size: 15px; padding-right: 3px"
-                class="el-icon-s-order"
-              ></i
-              >我的订单
-            </el-link>
-          </el-dropdown-item>
-          <el-dropdown-item>
-            <el-link
-              :underline="false"
-              href="/me/setting"
+              :to="{path: center}"
               style="padding-right: 7px"
             >
               <i
                 style="font-size: 15px; padding-right: 3px"
                 class="el-icon-user-solid"
               ></i
+              >个人中心
+            </router-link>
+          </el-dropdown-item>
+          <el-dropdown-item>
+            <router-link
+              :underline="false"
+              to="/me/setting"
+              style="padding-right: 7px"
+            >
+              <i
+                style="font-size: 15px; padding-right: 3px"
+                class="el-icon-setting"
+              ></i
               >个人设置
-            </el-link>
+            </router-link>
           </el-dropdown-item>
           <el-dropdown-item divided>
             <el-button type="text" @click="handleLogout" :underline="false">
@@ -111,6 +98,7 @@
 
 <script>
 import { getInfo } from "@/api/user";
+import path from "path";
 
 export default {
   name: "Header",
@@ -124,6 +112,7 @@ export default {
       user: {
         username: "",
       },
+      center:'',
     };
   },
 
@@ -146,6 +135,7 @@ export default {
           if (res.code === 200) {
             this.isLogin = true;
             this.user = res.obj;
+            this.center = '/user/' + res.obj.id;
           } else {
             this.isLogin = false;
             this.user = {};

@@ -6,7 +6,7 @@
           <div class="avatar">
             <el-image class="avatar-img" :src="data.userImg"></el-image>
           </div>
-          <router-link :to="'/'" class="link-info">{{
+          <router-link :to="'/user/' + data.uid" class="link-info">{{
             data.username
           }}</router-link>
 
@@ -31,7 +31,6 @@
         <el-image
           style="width: 100px; height: 100px"
           fit="scale-down"
-          loading="lazy"
           :src="data.cover"
         >
         </el-image>

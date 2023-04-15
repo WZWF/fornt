@@ -1,12 +1,22 @@
 <template>
   <div class="app">
-    <el-carousel height="500px" type="card" indicator-position="outside">
-      <el-carousel-item v-for="(item, index) in posterList" :key="index">
-        <img alt="" @click="goMovie(item.mid)" :src="item.poster" style="width: 100%; height: 500px" />
-        <div class="carousel_div">
-          <h3>{{ item.title }}</h3>
-        </div>
-      </el-carousel-item>
+    <el-carousel height="500px" type="card" indicator-position="outside" @change="changeItem">
+      <div>
+        <el-carousel-item v-for="(item, index) in posterList" :key="index">
+          <img
+            alt=""
+            @click="goMovie(item.mid)"
+            :src="item.poster"
+            style="width: 100%; height: 500px"
+          />
+          <!-- <div class="carousel_div">
+            <h3>{{ item.title }}</h3>
+          </div> -->
+        </el-carousel-item>
+      </div>
+      <div class="carousel_div">
+        <h3>{{ title }}</h3>
+      </div>
     </el-carousel>
 
     <!-- <div class="main">
@@ -58,7 +68,7 @@
 </template>
 
 <script>
-import { listAllPoster } from "@/api/movie"
+import { listAllPoster } from "@/api/movie";
 
 export default {
   data() {
@@ -66,18 +76,25 @@ export default {
       topList: [],
       filmList: [],
       posterList: [],
+      title : "",
     };
   },
   methods: {
     goMovie(mid) {
       this.$router.push({
-        path:'/movie/' + mid
-        });
+        path: "/movie/" + mid,
+      });
     },
     getList() {
       listAllPoster().then((res) => {
-        this.posterList = res.obj;
+        this.posterList = res.obj == null ? [] : res.obj;
+        if (res.obj != null) this.title = res.obj[0].title
       });
+    },
+    changeItem(idx) {
+      console.log(idx
+      );
+      this.title = this.posterList[idx].title
     },
   },
 
@@ -99,10 +116,13 @@ import "@/assets/css/home.css";
 }
 
 .carousel_div {
-  position: relative;
+  position: absolute;
+  width: 100%;
+  text-align: center;
   background-color: rgb(80, 80, 80, 0.1);
   box-shadow: -11px -34px 100px 10px grey;
   bottom: 24px;
+  z-index: 10;
 }
 
 .carousel_div h3 {

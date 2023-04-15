@@ -47,7 +47,11 @@
       <div v-if="!movieLoading">
         <el-skeleton :row="3" animated></el-skeleton>
       </div>
-      <div class="movie-content" v-if="movieData.length">
+      <div
+        
+        class="movie-content"
+        v-if="movieData.length"
+      >
         <!-- <div
         v-for="(item, index) in movieData"
         :key="index"
@@ -214,6 +218,7 @@ export default {
 
 .movie-content {
   margin: 1% 5%;
+  min-width: 1000px
 }
 
 .top-list {

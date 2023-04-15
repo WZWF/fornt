@@ -2,31 +2,18 @@
   <div class="me">
     <div class="main">
 
-      <div class="aside" style="width: 240px">
+      <!-- <div class="aside" style="width: 240px">
         <h2 style="text-align: center;padding:10px 0;letter-spacing: 2px;font-weight: 400">个人中心</h2>
         <el-menu
             class="el-menu-vertical-demo">
-          <router-link to="/me/cart">
-            <el-menu-item index="1">
-              <i class="el-icon-shopping-cart-1"></i>
-              <span style="letter-spacing: 1px" slot="title">购物车</span>
-            </el-menu-item>
-          </router-link>
-          <router-link to="/me/order">
-            <el-menu-item index="2">
-              <i class="el-icon-s-order"></i>
-              <span style="letter-spacing: 1px" slot="title">我的订单</span>
-            </el-menu-item>
-          </router-link>
           <router-link to="/me/setting">
-            <el-menu-item index="3">
+            <el-menu-item index="1">
               <i class="el-icon-setting"></i>
               <span style="letter-spacing: 1px" slot="title">基本设置</span>
             </el-menu-item>
           </router-link>
         </el-menu>
-      </div>
-
+      </div> -->
       <div class="content">
         <router-view/>
       </div>
@@ -62,6 +49,8 @@
 .content {
   float: left;
   padding: 10px 40px;
-  width: 800px;
+  padding-left: 150px;
+  width: 80%;
+  margin: 0 7%;
 }
 </style>

@@ -51,3 +51,10 @@ export function postComment(data) {
         data
     })
 }
+
+export function getVideos(id) {
+    return request({
+        url: '/movie/videos/' + id,
+        method: 'get',
+    })
+}

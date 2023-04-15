@@ -37,13 +37,13 @@ service.interceptors.response.use(
     response => {
         const res = response.data;
         if (res.code === 200) {
-            if (res.msg !== null) {
-                Notification.success({
-                    title: 'Success ',
-                    message: res.message,
-                    type: 'success'
-                });
-            }
+            // if (res.msg !== null) {
+            //     Notification.success({
+            //         title: 'Success ',
+            //         message: res.message,
+            //         type: 'success'
+            //     });
+            // }
 
         } else if (res.code === 500250) {
             //store.dispatch("user/logout");

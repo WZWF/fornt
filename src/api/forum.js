@@ -54,3 +54,11 @@ export function likeComment(data) {
         params: data
     })
 }
+
+export function postArticle(data) {
+    return request({
+        url: '/forum/article',
+        method: 'post',
+        data
+    })
+}

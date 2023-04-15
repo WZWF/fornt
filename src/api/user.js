@@ -86,3 +86,35 @@ export function resetInfo(data) {
         method: 'get',
     })
 }
+
+export function getUserCenterInfo(id) {
+    return service({
+        url:'/user/userCenterInfo/' + id,
+        method: 'get',
+    })
+}
+
+export function getUserRatingMovie(id, data) {
+    return service({
+        url:'/user/userRatingMovie/' + id,
+        method: 'get',
+        params: data,
+    })
+}
+
+export function getRelatedArticles(id, data, num) {
+    return service({
+        url:'/user/relatedArticles/' + num + '/' + id,
+        method: 'get',
+        params: data,
+    })
+}
+
+export function getUserMovieComment(id, data, num) {
+    return service({
+        url:'/user/relatedArticles/' + num + '/' + id,
+        method: 'get',
+        params: data,
+    })
+}
+
