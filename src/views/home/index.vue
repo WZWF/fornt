@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import { listAllPoster } from "@/api/movie";
+import { listAllPoster, getReco } from "@/api/movie";
 import movieItem from "@/components/movieItem/movieItem.vue";
 
 export default {
@@ -169,6 +169,11 @@ export default {
       recommentData:[],
       posterList: [],
       title: "",
+      query: {
+        start: 0,
+        num: 10,
+      },
+      count: 0,
     };
   },
   methods: {
@@ -182,14 +187,64 @@ export default {
         this.posterList = res.obj == null ? [] : res.obj;
         if (res.obj != null) this.title = res.obj[0].title;
       });
+      this.loadReco()
+    },
+    loadReco() {
+      getReco(this.query).then((res) => {
+        if (res.code === 200) {
+          this.recommentData = res.obj.objs == null ? [] : res.obj.objs;
+          this.query.start += this.query.num;
+          this.count = res.obj.count;
+        }
+      })
     },
     changeItem(idx) {
       this.title = this.posterList[idx].title;
     },
+    loadMore() {
+      getReco(this.query).then((res) => {
+        if (res.code === 200) {
+          this.recommentData.push(...res.obj.objs);
+          this.query.start += this.query.num;
+          this.count = res.obj.count;
+        } else {
+          this.$message.error(res.message);
+        }
+      });
+    },
+    delay(delay) {
+      setTimeout(() => {
+        this.loadMore();
+      }, delay);
+    },
+    listenerOnScroll() {
+      const _this = this;
+      window.onscroll = function () {
+        var scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop;
+        var windowHeight =
+          document.documentElement.clientHeight || document.body.clientHeight;
+        var scrollHeight =
+          document.documentElement.scrollHeight || document.body.scrollHeight;
+        if (scrollTop + windowHeight > scrollHeight - 1) {
+          if (
+            _this.recommentData !== null &&
+            _this.recommentData.length < _this.count
+          ) {
+            _this.delay(200);
+          } else {
+            _this.$message.info("没有更多数据");
+          }
+        }
+      };
+    },
   },
-
+  destroyed() {
+    window.onscroll = null;
+  },
   mounted() {
     this.getList();
+    this.listenerOnScroll();
   },
 };
 import "@/assets/css/home.css";

@@ -58,3 +58,11 @@ export function getVideos(id) {
         method: 'get',
     })
 }
+
+export function getReco(data) {
+    return request({
+        url: '/home/sysReco',
+        method: 'get',
+        params: data
+    })
+}
