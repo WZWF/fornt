@@ -261,6 +261,7 @@ export default {
     outline: none;
     background-color: #fff;
     border: 1px solid #aeaeae;
+    appearance: none;
     -webkit-appearance: none;
     margin-top: 2px;
     text-indent: 11px;
