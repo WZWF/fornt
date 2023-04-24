@@ -33,15 +33,14 @@
         />
       </div>
 
-      <el-link
+      <div
         v-if="!isLogin"
-        href="/login"
+        @click="toLogin"
         style="float: right; padding-top: 23px; padding-right: 50px"
         class="header-link"
-        :underline="false"
       >
         登录
-      </el-link>
+      </div>
       <el-dropdown v-if="isLogin" style="float: right; padding-right: 10px">
         <el-button type="text">
           <div class="header-name">
@@ -98,7 +97,6 @@
 
 <script>
 import { getInfo } from "@/api/user";
-import path from "path";
 
 export default {
   name: "Header",
@@ -129,6 +127,12 @@ export default {
     },
   },
   methods: {
+    toLogin() {
+      this.$router.push({
+          name: "login",
+          query: { redirect: this.$router.currentRoute.fullPath },
+        });
+    },
     init() {
       if (window.localStorage.getItem("ID") !== null) {
         getInfo(window.localStorage.getItem("ID")).then((res) => {
@@ -173,7 +177,7 @@ export default {
 .header {
   height: 70px;
   background: #ffffff;
-  box-shadow: 0 2px 12px 0 rgb(0 0 0/10%);
+  // box-shadow: 0 2px 12px 0 rgb(0 0 0/10%);
   border: 1px solid #ebeef5;
 }
 
@@ -216,6 +220,7 @@ export default {
   letter-spacing: 2px;
   font-size: 17px;
   padding-right: 40px;
+  cursor: pointer;
 }
 
 .header-name {
