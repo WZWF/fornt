@@ -103,17 +103,16 @@
           >
         </div>
         <div class="login-form-footer">
-          <el-link
-            href="/login"
-            style="font-weight: bolder; font-size: 16px; color: #91949c"
-            :underline="false"
+          <div
+            @click="toLogin"
+            style="font-weight: bolder; font-size: 16px; color: #91949c; cursor: pointer;"
           >
             我有账号 去登录
             <i
               style="font-weight: bolder; font-size: 15px"
               class="el-icon-right"
             ></i>
-          </el-link>
+        </div>
         </div>
       </div>
     </el-form>
@@ -202,6 +201,11 @@ export default {
     };
   },
   methods: {
+    toLogin() {
+      this.$router.push({
+        name: "login",
+      });
+    },
     getId() {
       new Promise(() => {
         getId().then((resp) => {

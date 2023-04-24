@@ -62,17 +62,21 @@
           >
         </div>
         <div class="login-form-footer">
-          <el-link
-            href="/register"
-            style="font-weight: bolder; font-size: 16px; color: #91949c"
-            :underline="false"
+          <div
+            @click="toRegister"
+            style="
+              font-weight: bolder;
+              font-size: 16px;
+              color: #91949c;
+              cursor: pointer;
+            "
           >
             还没有账号？去注册
             <i
               style="font-weight: bolder; font-size: 15px"
               class="el-icon-right"
             ></i>
-          </el-link>
+          </div>
         </div>
       </div>
     </el-form>
@@ -80,7 +84,7 @@
 </template>
 
 <script>
-import { getToken } from '@/utils/auth'
+import { getToken } from "@/utils/auth";
 export default {
   data() {
     const validateUsername = (rule, value, callback) => {
@@ -112,24 +116,32 @@ export default {
         ],
       },
       passwordType: "password",
-      redirect: undefined
+      redirect: undefined,
     };
   },
   watch: {
     $route: {
-      handler: function(route) {
-        this.redirect = route.query && route.query.redirect
+      handler: function (route) {
+        this.redirect = route.query && route.query.redirect;
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   methods: {
+    toRegister() {
+      this.$router.push({
+        name: "register",
+        query: { redirect: this.$router.currentRoute.fullPath },
+      });
+    },
     postLogin() {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
           this.loading = true;
-          this.$store.dispatch("user/login", this.loginForm).then(() => {
-              this.$router.push({ path: this.redirect || '/' })
+          this.$store
+            .dispatch("user/login", this.loginForm)
+            .then(() => {
+              this.$router.push({ path: this.redirect || "/" });
               this.loading = false;
             })
             .catch((error) => {

@@ -11,7 +11,9 @@
         <div class="header-logo-text"></div>
       </div>
       <div class="header-links">
-        <router-link to="/" class="header-link" :underline="false">首页</router-link>
+        <router-link to="/" class="header-link" :underline="false"
+          >首页</router-link
+        >
         <router-link to="/movies" class="header-link" :underline="false"
           >电影</router-link
         >
@@ -57,7 +59,7 @@
           <el-dropdown-item>
             <router-link
               :underline="false"
-              :to="{path: center}"
+              :to="{ path: center }"
               style="padding-right: 7px"
             >
               <i
@@ -110,7 +112,7 @@ export default {
       user: {
         username: "",
       },
-      center:'',
+      center: "",
     };
   },
 
@@ -129,9 +131,9 @@ export default {
   methods: {
     toLogin() {
       this.$router.push({
-          name: "login",
-          query: { redirect: this.$router.currentRoute.fullPath },
-        });
+        name: "login",
+        query: { redirect: this.$router.currentRoute.fullPath },
+      });
     },
     init() {
       if (window.localStorage.getItem("ID") !== null) {
@@ -139,7 +141,7 @@ export default {
           if (res.code === 200) {
             this.isLogin = true;
             this.user = res.obj;
-            this.center = '/user/' + res.obj.id;
+            this.center = "/user/" + res.obj.id;
           } else {
             this.isLogin = false;
             this.user = {};
@@ -158,7 +160,7 @@ export default {
     async handleLogout() {
       await this.$store.dispatch("user/logout");
       //this.$router.push({ path: "/login" });
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      this.$router.push(`/login?redirect=${this.$route.fullPath}`);
       // getInfo(window.localStorage.getItem("ID")).then((res) => {
       //   if (res.code === 200) {
       //     this.isLogin = true;
@@ -181,11 +183,11 @@ export default {
   border: 1px solid #ebeef5;
 }
 
-.title{
+.title {
   float: left;
   font-size: 30px;
   padding-top: 8px;
-  font-family:华文行楷;
+  font-family: 华文行楷;
 }
 
 .header-logo {
