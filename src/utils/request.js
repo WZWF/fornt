@@ -52,10 +52,10 @@ service.interceptors.response.use(
             if (localStorage.getItem("ID") !== null) localStorage.removeItem("ID")
             if (localStorage.getItem("token") !== null) localStorage.removeItem("token")
         } else {
-            Notification.error({
-                title: '错误提示: ',
-                message: res.message
-            });
+            // Notification.error({
+            //     title: '错误提示: ',
+            //     message: res.message
+            // });
         }
         return res
     },

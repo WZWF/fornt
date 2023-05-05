@@ -155,7 +155,9 @@ export default {
     },
 
     goSearch() {
-      this.$router.push("/search/" + this.searchText);
+      if (this.searchText) {
+        this.$router.push("/search/" + this.searchText);
+      }
     },
     async handleLogout() {
       await this.$store.dispatch("user/logout");

@@ -16,7 +16,6 @@
         <div class="load-more">
           <span class="load-more-content">
             根据您历史评分记录为你做出如下推荐..
-            <a class="load-more-a" @click="loadMore">加载更多</a>
           </span>
         </div>
         <movieItem
@@ -32,7 +31,7 @@
   <script>
 import movieItem from "@/components/movieItem/movieItem.vue";
 import { getId } from "@/utils/auth";
-import { getOfflineData } from "@/api/recommendation";
+import { getOfflineRandomData } from "@/api/recommendation";
 export default {
   name: "offline",
   components: {
@@ -42,10 +41,6 @@ export default {
     return {
       movieData: [],
       count: 0,
-      query: {
-        start: 0,
-        num: 6,
-      },
     };
   },
   computed: {
@@ -62,31 +57,12 @@ export default {
     },
     async getMovieData() {
       if (this.uid !== undefined && this.uid !== null) {
-        await getOfflineData(this.query).then((res) => {
+        await getOfflineRandomData().then((res) => {
           if (res.code === 200) {
-            this.movieData = res.obj.objs;
-            this.query.start += this.query.num;
-            this.count = res.obj.count;
-          } else {
-            this.$message.error(res.message);
-          }
-        });
-      }
-    },
-    loadMore() {
-      if (this.query.start > this.count) {
-        this.$message.info("没有更多数据了");
-      } else {
-        this.loadMoreMovie();
-      }
-    },
-    async loadMoreMovie() {
-      if (this.uid !== undefined && this.uid !== null) {
-        await getOfflineData(this.query).then((res) => {
-          if (res.code === 200) {
-            this.movieData.push(...res.obj.objs);
-            this.query.start += this.query.num;
-            this.count = res.obj.count;
+            if (res.obj != null) {
+              this.movieData = res.obj.objs;
+              this.count = res.obj.count;
+            }
           } else {
             this.$message.error(res.message);
           }

@@ -93,6 +93,7 @@
 
 <script>
 import { listAllPoster, getReco } from "@/api/movie";
+import { visit } from "@/api/home"
 import movieItem from "@/components/movieItem/movieItem.vue";
 
 export default {
@@ -245,6 +246,7 @@ export default {
   mounted() {
     this.getList();
     this.listenerOnScroll();
+    visit();
   },
 };
 import "@/assets/css/home.css";

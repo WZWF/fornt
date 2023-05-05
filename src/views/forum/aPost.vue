@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="width: 80%; margin: 0 auto;">
     <div class="top-container">
       <div @click="returnLast" class="return">
         <span class="el-icon-arrow-left">返回</span>
@@ -369,7 +369,7 @@ export default {
   }
   .publish {
     position: absolute;
-    right: 20px;
+    right: 10%;
   }
 }
 

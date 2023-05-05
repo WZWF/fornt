@@ -24,7 +24,7 @@
         </div>
         <div class="top-op">
           <el-row>
-            <el-col :span="12" style="margin-right: 10px;">
+            <el-col :span="12" style="margin-right: 10px">
               <el-input
                 placeholder="搜索帖子"
                 v-model="queryInfo.keyword"
@@ -41,7 +41,12 @@
               </el-input>
             </el-col>
             <el-col :span="2">
-              <el-button type="primary" @click="toAddPost" icon="el-icon-plus"
+              <el-button
+                type="primary"
+                @click="toAddPost"
+                icon="el-icon-plus"
+                class="el-button--medium"
+                style="margin-top: 2px"
                 >发帖</el-button
               >
             </el-col>
@@ -115,7 +120,7 @@ export default {
       loading: false,
     };
   },
-  computed:{
+  computed: {
     ...mapState({
       user: function () {
         return this.$store.state.user;
@@ -128,13 +133,13 @@ export default {
     },
     toAddPost() {
       if (!this.user.token) {
-      this.$router.push({
+        this.$router.push({
           name: "login",
           query: { redirect: this.$router.currentRoute.fullPath },
         });
-    } else {
-      this.$router.push({name: "addPost"});
-    }
+      } else {
+        this.$router.push({ name: "addPost" });
+      }
     },
     async fetchData() {
       this.loading = true;
@@ -176,6 +181,7 @@ export default {
       align-items: center;
       padding: 10px 15px;
       font-size: 15px;
+      height: 36px;
       border-bottom: 1px solid #ddd;
       .tab {
         cursor: pointer;

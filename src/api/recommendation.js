@@ -9,11 +9,25 @@ export function getOnlineData(data) {
     })
 }
 
+export function getOnlineRandomData() {
+    return request({
+        url: '/movieRecommend/onlineRandom/' + getId(),
+        method: 'get',
+    })
+}
+
 export function getOfflineData(data) {
     return request({
         url: '/movieRecommend/offline/' + getId(),
         method: 'get',
         params: data
+    })
+}
+
+export function getOfflineRandomData() {
+    return request({
+        url: '/movieRecommend/offlineRandom/' + getId(),
+        method: 'get',
     })
 }
 

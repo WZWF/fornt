@@ -218,6 +218,7 @@ export default {
             }
             this.score = index;
             this.resetScore();
+            this.$message.success("评分成功!");
           } else {
             this.$message.error(res.message);
           }
